@@ -31,9 +31,13 @@ export async function sendWelcomeEmail(emailData: EmailData): Promise<boolean> {
         sendSmtpEmail.htmlContent = htmlContent;
 
         // Enviar
-        await brevoClient.sendTransacEmail(sendSmtpEmail);
+        if (brevoClient) {
+            await (brevoClient as any).sendTransacEmail(sendSmtpEmail);
+            console.log('✅ Email de boas-vindas enviado para:', emailData.to);
+        } else {
+            console.log('⚠️ Brevo client não inicializado - Email de boas-vindas não enviado');
+        }
 
-        console.log('✅ Email de boas-vindas enviado para:', emailData.to);
         return true;
     } catch (error) {
         console.error('❌ Erro ao enviar email:', error);
@@ -127,8 +131,13 @@ export async function sendPaymentPendingEmail(
 </html>
         `;
 
-        await brevoClient.sendTransacEmail(sendSmtpEmail);
-        console.log('✅ Email de pagamento pendente enviado para:', email);
+        if (brevoClient) {
+            await (brevoClient as any).sendTransacEmail(sendSmtpEmail);
+            console.log('✅ Email de pagamento pendente enviado para:', email);
+        } else {
+            console.log('⚠️ Brevo client não inicializado - Email de pagamento pendente não enviado');
+        }
+
         return true;
     } catch (error) {
         console.error('❌ Erro ao enviar email de pagamento pendente:', error);
