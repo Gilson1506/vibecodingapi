@@ -1,5 +1,5 @@
 import { supabase } from '../config/supabase';
-import { nanoid } from 'nanoid';
+
 import type { User } from '../types';
 
 /**

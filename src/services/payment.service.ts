@@ -1,6 +1,6 @@
 import { supabase } from '../config/supabase';
 import type { Payment, PaymentData } from '../types';
-import { nanoid } from 'nanoid';
+
 
 /**
  * Cria um novo pagamento no banco de dados

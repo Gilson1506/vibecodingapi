@@ -3,7 +3,7 @@ import { supabase } from '../config/supabase';
 import { AppyPayService } from '../services/appyPay.service';
 import { createUserAfterPayment, getUserByEmail } from '../services/user.service';
 import { sendWelcomeEmail, sendPaymentPendingEmail } from '../services/email.service';
-import { v4 as uuidv4 } from 'uuid';
+
 import { paymentEvents } from '../services/paymentEvents.service';
 
 // Helper to handle successful payment logic (create user, send email)
