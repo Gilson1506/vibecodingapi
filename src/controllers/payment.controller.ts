@@ -60,7 +60,34 @@ async function handleSuccessfulPayment(payment: any) {
             await supabase.from('users').update({ has_access: true }).eq('id', userId);
         }
 
-        // 2. Send Email
+        // 2. Handle Project Purchase (if applicable)
+        const metadata = payment.metadata || {};
+        const projectId = metadata.projectId || metadata.project_id;
+        if (metadata.type === 'project' && projectId && userId) {
+            console.log(`Granting access to project ${projectId} for user ${userId}...`);
+            await supabase
+                .from('project_purchases')
+                .upsert({
+                    user_id: userId,
+                    project_id: projectId,
+                    payment_id: payment.id
+                }, { onConflict: 'user_id, project_id' });
+        }
+
+        // 3. Handle Course Purchase (Enrollment)
+        const courseId = metadata.courseId || metadata.course_id;
+        if (metadata.type === 'course' && courseId && userId) {
+            console.log(`Enrolling user ${userId} in course ${courseId}...`);
+            await supabase
+                .from('enrollments')
+                .upsert({
+                    user_id: userId,
+                    course_id: courseId,
+                    payment_id: payment.id
+                }, { onConflict: 'user_id, course_id' });
+        }
+
+        // 3. Send Email
         // If we created a user, send Welcome email with credentials
         // If user already existed, maybe send a "Payment Received" email?
         // For now, let's focus on the "New User" flow as requested.
@@ -173,6 +200,8 @@ export const PaymentController = {
                     external_id: merchantTransactionId,
                     metadata: {
                         courseId,
+                        projectId: req.body.projectId, // Support project specific ID
+                        type: req.body.type || (courseId ? 'course' : 'project'), // Support explicit type
                         provider: 'appypay'
                     }
                 })
